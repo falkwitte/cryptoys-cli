@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use cryptoys::historical::{affine, atbash, caesar, rot13, playfair};
+use cryptoys::historical::{affine, atbash, caesar, playfair, rot13};
 use cryptoys::key::otp;
 
 #[derive(Subcommand)]
@@ -35,43 +35,43 @@ enum Commands {
     },
 
     /// caesar cipher
-    Caesar{
+    Caesar {
         /// encrypts plaintext with the caesar cipher
-        #[arg(short='e', long)]
+        #[arg(short = 'e', long)]
         encrypt: Option<String>,
 
         /// decrypts ciphertext encrypted with the caesar cipher
-        #[arg(short='d', long)]
+        #[arg(short = 'd', long)]
         decrypt: Option<String>,
 
         /// shift
-        #[arg(required=true, short='s', long)]
+        #[arg(required = true, short = 's', long)]
         shift: u8,
     },
 
     /// rot13 cipher
-    Rot13{
+    Rot13 {
         /// encrypts plaintext with the caesar cipher
-        #[arg(short='e', long)]
+        #[arg(short = 'e', long)]
         encrypt: Option<String>,
 
         /// decrypts ciphertext encrypted with the casear cipher
-        #[arg(short='d', long)]
+        #[arg(short = 'd', long)]
         decrypt: Option<String>,
     },
 
     /// playfair cipher
-    Playfair{
+    Playfair {
         /// encrypts plaintext with the playfair cipher
-        #[arg(short='e', long)]
+        #[arg(short = 'e', long)]
         encrypt: Option<String>,
 
         /// decrypts ciphertext encrypted with the playfair cipher
-        #[arg(short='d', long)]
+        #[arg(short = 'd', long)]
         decrypt: Option<String>,
 
         /// key
-        #[arg(short='k', long, required=true)]
+        #[arg(short = 'k', long, required = true)]
         key: String,
     },
 
@@ -141,10 +141,10 @@ fn main() {
                 let plaintext = affine::decrypt(a, b, &decrypt.unwrap());
                 println!("{plaintext}");
             }
-        },
-        
+        }
+
         Commands::Caesar {
-            encrypt, 
+            encrypt,
             decrypt,
             shift,
         } => {
@@ -156,12 +156,9 @@ fn main() {
                 let plaintext = caesar::decrypt(&decrypt.unwrap(), shift);
                 println!("{plaintext}");
             }
-        },
+        }
 
-        Commands::Rot13 {
-            encrypt,
-            decrypt 
-        } => {
+        Commands::Rot13 { encrypt, decrypt } => {
             if encrypt.is_some() {
                 let ciphertext = rot13::encrypt(&encrypt.unwrap()).to_string();
                 println!("{ciphertext}");
@@ -170,7 +167,7 @@ fn main() {
                 let plaintext = rot13::decrypt(&decrypt.unwrap());
                 println!("{plaintext}");
             }
-        },
+        }
 
         Commands::Playfair {
             encrypt,
