@@ -1,6 +1,8 @@
 use clap::{Parser, Subcommand};
 use cryptoys::historical::{affine, atbash, caesar, playfair, rot13};
 use cryptoys::key::otp;
+use std::fs::{read_to_string, write};
+use std::path::PathBuf;
 
 #[derive(Subcommand)]
 enum Commands {
@@ -103,12 +105,14 @@ fn main() {
     match args.command {
         Commands::Atbash { encrypt, decrypt } => {
             if encrypt.is_some() {
-                let ciphertext = atbash::encrypt(&encrypt.unwrap()).to_string();
-                println!("{ciphertext}");
+                let encrypt = extract_file_content(encrypt.unwrap());
+                let ciphertext = atbash::encrypt(&encrypt).to_string();
+                write_to_output_file(ciphertext);
             }
             if decrypt.is_some() {
-                let plaintext = atbash::decrypt(&decrypt.unwrap());
-                println!("{plaintext}");
+                let decrypt = extract_file_content(decrypt.unwrap());
+                let plaintext = atbash::decrypt(&decrypt);
+                write_to_output_file(plaintext);
             }
         }
 
@@ -118,12 +122,14 @@ fn main() {
             pad,
         } => {
             if encrypt.is_some() {
-                let ciphertext = otp::encrypt(pad.clone(), &encrypt.unwrap()).to_string();
-                println!("{ciphertext}");
+                let encrypt = extract_file_content(encrypt.unwrap());
+                let ciphertext = otp::encrypt(pad.clone(), &encrypt).to_string();
+                write_to_output_file(ciphertext);
             }
             if decrypt.is_some() {
-                let plaintext = otp::decrypt(pad, &decrypt.unwrap());
-                println!("{plaintext}");
+                let decrypt = extract_file_content(decrypt.unwrap());
+                let plaintext = otp::decrypt(pad, &decrypt);
+                write_to_output_file(plaintext);
             }
         }
 
@@ -134,12 +140,14 @@ fn main() {
             b,
         } => {
             if encrypt.is_some() {
-                let ciphertext = affine::encrypt(a, b, &encrypt.unwrap()).to_string();
-                println!("{ciphertext}");
+                let encrypt = extract_file_content(encrypt.unwrap());
+                let ciphertext = affine::encrypt(a, b, &encrypt).to_string();
+                write_to_output_file(ciphertext);
             }
             if decrypt.is_some() {
-                let plaintext = affine::decrypt(a, b, &decrypt.unwrap());
-                println!("{plaintext}");
+                let decrypt = extract_file_content(decrypt.unwrap());
+                let plaintext = affine::decrypt(a, b, &decrypt);
+                write_to_output_file(plaintext);
             }
         }
 
@@ -149,23 +157,27 @@ fn main() {
             shift,
         } => {
             if encrypt.is_some() {
-                let ciphertext = caesar::encrypt(&encrypt.unwrap(), shift).to_string();
-                println!("{ciphertext}");
+                let encrypt = extract_file_content(encrypt.unwrap());
+                let ciphertext = caesar::encrypt(&encrypt, shift).to_string();
+                write_to_output_file(ciphertext);
             }
             if decrypt.is_some() {
-                let plaintext = caesar::decrypt(&decrypt.unwrap(), shift);
-                println!("{plaintext}");
+                let decrypt = extract_file_content(decrypt.unwrap());
+                let plaintext = caesar::decrypt(&decrypt, shift);
+                write_to_output_file(plaintext);
             }
         }
 
         Commands::Rot13 { encrypt, decrypt } => {
             if encrypt.is_some() {
-                let ciphertext = rot13::encrypt(&encrypt.unwrap()).to_string();
-                println!("{ciphertext}");
+                let encrypt = extract_file_content(encrypt.unwrap());
+                let ciphertext = rot13::encrypt(&encrypt).to_string();
+                write_to_output_file(ciphertext);
             }
             if decrypt.is_some() {
-                let plaintext = rot13::decrypt(&decrypt.unwrap());
-                println!("{plaintext}");
+                let decrypt = extract_file_content(decrypt.unwrap());
+                let plaintext = rot13::decrypt(&decrypt);
+                write_to_output_file(plaintext);
             }
         }
 
@@ -175,13 +187,25 @@ fn main() {
             key,
         } => {
             if encrypt.is_some() {
-                let ciphertext = playfair::encrypt(&encrypt.unwrap(), key.as_str()).to_string();
-                println!("{ciphertext}");
+                let encrypt = extract_file_content(encrypt.unwrap());
+                let ciphertext = playfair::encrypt(&encrypt, key.as_str());
+                write_to_output_file(ciphertext);
             }
             if decrypt.is_some() {
-                let plaintext = playfair::decrypt(&decrypt.unwrap(), key.as_str());
-                println!("{plaintext}");
+                let decrypt = extract_file_content(decrypt.unwrap());
+                let plaintext = playfair::decrypt(&decrypt, key.as_str());
+                write_to_output_file(plaintext);
             }
         }
     }
+}
+
+
+fn extract_file_content(file: String) -> String{
+    let file_path = PathBuf::from(file);
+    read_to_string(file_path).unwrap()
+}
+
+fn write_to_output_file(content: String){
+    write(PathBuf::from("output.txt"), content).unwrap();
 }
