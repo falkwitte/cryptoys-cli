@@ -200,12 +200,11 @@ fn main() {
     }
 }
 
-
-fn extract_file_content(file: String) -> String{
+fn extract_file_content(file: String) -> String {
     let file_path = PathBuf::from(file);
     read_to_string(file_path).unwrap()
 }
 
-fn write_to_output_file(content: String){
+fn write_to_output_file(content: String) {
     write(PathBuf::from("output.txt"), content).unwrap();
 }
